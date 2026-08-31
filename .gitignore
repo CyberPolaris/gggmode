@@ -1,0 +1,20 @@
+# 编译产物
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# 覆盖率报告
+coverage.txt
+coverage.html
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# 本地环境
+.env
+.claude/
