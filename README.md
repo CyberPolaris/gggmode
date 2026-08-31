@@ -1,6 +1,6 @@
 # gggmode
 
-> 一句话描述包的用途（待补充）。
+> 根据检测到的画面 tags 反推规则 key（如 `普通脸——和平精英`），两级匹配：精确命中优先，无精确命中时按 F1 打分模糊匹配。Python 版 face_rule_matcher 的 Go 移植，行为逐例对齐。
 
 [![Go Version](https://img.shields.io/badge/go-1.27-blue)](https://go.dev/)
 
@@ -12,9 +12,22 @@ go get github.com/CyberPolaris/gggmode
 
 ## 使用
 
+规则内容（rules.json）由使用方自行传入，本包不内置任何规则：
+
 ```go
-import "github.com/CyberPolaris/gggmode"
+data, _ := os.ReadFile("rules.json")
+rs, err := gggmode.LoadRules(data)
+if err != nil {
+    // 未知操作符等规则问题在加载时报错
+}
+
+key, ok := rs.BestMatch(683, tags)   // 生产流水线：只取排第一的 key
+keys := rs.MatchKeys(683, tags)      // 全部候选 key
+details := rs.MatchDetail(683, tags) // 带打分明细，调阈值/排查误判用
 ```
+
+完整说明（规则语义、game 参数、匹配选项、误判防护、与 Python 版的差异）见
+[docs/face_rule_matcher.md](docs/face_rule_matcher.md)。
 
 ## 开发
 
