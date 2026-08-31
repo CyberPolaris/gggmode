@@ -41,4 +41,4 @@ go vet ./...     # 静态检查
 
 ## License
 
-待定（建议 MIT 或 Apache-2.0，创建 GitHub 仓库时添加）。
+[MIT](LICENSE)
