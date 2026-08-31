@@ -78,12 +78,14 @@ Git 全局身份：`CyberPolaris <m13507262368@163.com>`
    git config core.autocrlf input
    ```
 5. **创建骨架文件**：`gggmode.go`、`gggmode_test.go`、`.gitignore`、`README.md`、本文档
+6. **登录 GitHub**：`gh auth login`，账号 CyberPolaris（token 权限：repo、workflow、gist、read:org）
+7. **创建远端仓库并推送**：`gh repo create CyberPolaris/gggmode --public --source . --push`
+   - 仓库地址：<https://github.com/CyberPolaris/gggmode>
+   - 首个提交 `699781b chore: init go module skeleton`，main 已跟踪 origin/main
 
 ### 待办
 
-- [ ] `gh auth login` 登录 GitHub 账号（需人工在浏览器完成授权）
 - [ ] 确定包的实际功能，补充 `gggmode.go` 与 README 描述
-- [ ] 在 GitHub 创建仓库并推送：`gh repo create CyberPolaris/gggmode --public --source . --push`
 - [ ] 选择 License（建议 MIT 或 Apache-2.0）
 - [ ] （可选）配置 GitHub Actions CI：build + vet + test
 - [ ] （可选，国内网络）`go env -w GOPROXY=https://goproxy.cn,direct`
