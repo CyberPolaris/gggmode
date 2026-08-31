@@ -19,8 +19,7 @@ coverage.html
 .env
 .claude/
 
-# 仅本地保留，不进公开仓库（参考资料 / 真实规则 / 测试用例 / README）
+# 仅本地保留，不进公开仓库（参考资料 / 真实规则 / 测试用例）
 .Python源码/
-README.md
 testdata/
 *_test.go
