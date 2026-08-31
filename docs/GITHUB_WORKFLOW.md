@@ -93,6 +93,13 @@ Git 全局身份：`CyberPolaris <m13507262368@163.com>`
 3. 测试：`matcher_test.go` 移植原版例 1~例 8，期望值取自 Python 实际运行输出，14 个测试全过
 4. 文档：`docs/face_rule_matcher.md`；rules.json 仅作 testdata，包不内置规则，使用方自行传入
 
+### 2026-08-31 收敛公开内容
+
+- README.md、testdata/rules.json、*_test.go、.Python源码/ 改为仅本地保留（.gitignore 屏蔽），
+  并用 git filter-branch 重写 main 历史抹掉已推送的副本后强推
+- 本地开发不受影响：测试文件与 testdata 都在本地，`go test ./...` 照常跑
+- 注意：PR #1 的 diff 页面仍缓存旧内容，彻底清除需删除重建仓库或联系 GitHub 支持
+
 ### 待办
 
 - [ ] 选择 License（建议 MIT 或 Apache-2.0）
