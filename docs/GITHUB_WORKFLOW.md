@@ -83,9 +83,19 @@ Git 全局身份：`CyberPolaris <m13507262368@163.com>`
    - 仓库地址：<https://github.com/CyberPolaris/gggmode>
    - 首个提交 `699781b chore: init go module skeleton`，main 已跟踪 origin/main
 
+### 2026-08-31 移植 face_rule_matcher（feat/face-rule-matcher 分支）
+
+1. 阅读 `.Python源码/face_rule_matcher.py`，用 pengpy312 环境运行原版拿到基准输出
+2. Go 移植：`rules.go`（保序 JSON 解析 + 规则编译）、`matcher.go`（打分与三个匹配入口）
+   - 关键点：encoding/json 的 map 不保序，自定义解析器保持 JSON 键顺序，
+     并列名次的排位才能与 Python 版（dict 插入序）一致
+   - 差异：未知操作符在 LoadRules 时报错（Python 在匹配时才报）
+3. 测试：`matcher_test.go` 移植原版例 1~例 8，期望值取自 Python 实际运行输出，14 个测试全过
+4. 文档：`docs/face_rule_matcher.md`；rules.json 仅作 testdata，包不内置规则，使用方自行传入
+
 ### 待办
 
-- [ ] 确定包的实际功能，补充 `gggmode.go` 与 README 描述
 - [ ] 选择 License（建议 MIT 或 Apache-2.0）
+- [ ] 打 v0.1.0 tag 发布
 - [ ] （可选）配置 GitHub Actions CI：build + vet + test
 - [ ] （可选，国内网络）`go env -w GOPROXY=https://goproxy.cn,direct`
