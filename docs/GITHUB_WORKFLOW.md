@@ -100,9 +100,10 @@ Git 全局身份：`CyberPolaris <m13507262368@163.com>`
 - 本地开发不受影响：测试文件与 testdata 都在本地，`go test ./...` 照常跑
 - 注意：PR #1 的 diff 页面仍缓存旧内容，彻底清除需删除重建仓库或联系 GitHub 支持
 
-### 待办
+### 2026-08-31 发布 v0.1.0
 
-- [ ] 选择 License（建议 MIT 或 Apache-2.0）
-- [ ] 打 v0.1.0 tag 发布
+- 添加 MIT License
+- 打 tag `v0.1.0` 并推送；使用方可 `go get github.com/CyberPolaris/gggmode@v0.1.0`
+- 注意：tag 被模块代理缓存后不可变，后续改动需发新版本号（不能删 tag 重打）
 - [ ] （可选）配置 GitHub Actions CI：build + vet + test
 - [ ] （可选，国内网络）`go env -w GOPROXY=https://goproxy.cn,direct`
