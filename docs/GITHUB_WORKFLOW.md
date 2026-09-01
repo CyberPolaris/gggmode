@@ -106,6 +106,15 @@ Git 全局身份：`CyberPolaris <m13507262368@163.com>`
 - 打 tag `v0.1.0` 并推送；使用方可 `go get github.com/CyberPolaris/gggmode@v0.1.0`
 - 注意：tag 被模块代理缓存后不可变，后续改动需发新版本号（不能删 tag 重打）
 
+### 2026-09-01 发布 v0.2.0：严格 min_hits（行为变更）
+
+- 起因：只检出 1 个独占 tag（如 外挂检索举报）也会命中规则，业务上属误判
+- 变更：模糊命中门槛 min_hits 不再随检出数收缩，证据不足（含所有单 tag 场景）一律不认；
+  确实要认单 tag 显式传 min_hits=1 / WithMinHits(1)；unique_single/WithUniqueSingle 废弃（保留兼容）
+- Python 参考实现（.Python源码/，本地）与 Go 版同步修改，Go 测试期望值按 Python 新基准重生成
+- 同期 testdata/rules.json 更新：各游戏补充 game_id，部分规则改名（三分钟脸、全游戏通用_ 前缀等）；
+  注意 .Python源码/rules.json 仍是旧版，两份已不同步
+
 ### 2026-09-01 发布 v0.1.1：兼容线上 Go 1.23
 
 - 线上 Jenkins 用 Go 1.23，go.mod 的 `go 1.27.0` 声明导致无法发版

@@ -22,8 +22,9 @@ type Detail struct {
 type Options struct {
 	// Fuzzy 是否允许模糊命中（默认 true）。false 时只认精确命中。
 	Fuzzy bool
-	// MinHits 模糊命中至少要对上的 tag 个数（默认 2，防止一两个 tag 巧合命中）；
-	// 会自动收缩到不超过实际检出的 tag 数。
+	// MinHits 模糊命中至少要对上的 tag 个数（默认 2，防止一两个 tag 巧合命中）。
+	// 严格门槛，不随检出数收缩：检出 tag 数不足 MinHits 时模糊匹配必然不认，
+	// 确实要认单 tag 的场景显式传 WithMinHits(1)。
 	MinHits int
 	// MinPrec 模糊入围门槛 = 命中数 / 检出tag数（默认 0.5）。
 	// 不看覆盖率，规则含 tag 再多也不吃亏；score(F1) 只用于排序和展示。
@@ -33,9 +34,10 @@ type Options struct {
 	// ExactFirst true（默认）= 精确命中提第一梯队；false = 纯模糊模式：
 	// 所有候选统一过 MinHits/MinPrec 门槛、统一按 score 排序（主要用于对比实验）。
 	ExactFirst bool
-	// UniqueSingle true（默认）= 单标签误判防护：证据不足（hit < MinHits，通常是只检出
-	// 1 个 tag）的模糊命中，只有当对上的 tag 在候选池内只属于这一条规则时才认；
-	// 共用 tag 一律不认，宁可不返回等下一帧。
+	// UniqueSingle 已废弃，无任何效果，保留仅为兼容：严格 MinHits 门槛下
+	// 不可能出现 hit < MinHits 的入围项，防护无用武之地。
+	//
+	// Deprecated: 严格 MinHits 已覆盖其功能。
 	UniqueSingle bool
 }
 
@@ -68,7 +70,9 @@ func WithIncludeGlobal(v bool) Option { return func(o *Options) { o.IncludeGloba
 // WithExactFirst 设置精确命中是否提第一梯队（默认 true）。
 func WithExactFirst(v bool) Option { return func(o *Options) { o.ExactFirst = v } }
 
-// WithUniqueSingle 设置单标签误判防护（默认 true）。
+// WithUniqueSingle 已废弃，无任何效果，保留仅为兼容。
+//
+// Deprecated: 严格 MinHits 门槛已覆盖其功能，见 Options.UniqueSingle。
 func WithUniqueSingle(v bool) Option { return func(o *Options) { o.UniqueSingle = v } }
 
 func round3(f float64) float64 { return math.Round(f*1000) / 1000 }
@@ -155,22 +159,13 @@ func (rs *RuleSet) MatchDetail(game any, detectedTags []string, opts ...Option) 
 	for _, t := range detectedTags {
 		tags[t] = struct{}{}
 	}
-	effMinHits := o.MinHits
-	if len(tags) < effMinHits {
-		effMinHits = len(tags)
-	}
+	effMinHits := o.MinHits // 严格门槛：不随检出数收缩，证据不足一律不认
 	if effMinHits < 1 {
 		effMinHits = 1
 	}
 
-	// run 对一批候选统一打分、分层、排序（df=池内每个 tag 被几条规则拥有，即区分度）
+	// run 对一批候选统一打分、分层、排序
 	run := func(cands []candidate) []Detail {
-		df := map[string]int{}
-		for _, c := range cands {
-			for t := range c.rule.tagSet {
-				df[t]++
-			}
-		}
 		var exact, partial []Detail
 		for _, c := range cands {
 			hit, total, ok := c.rule.score(tags)
@@ -191,19 +186,6 @@ func (rs *RuleSet) MatchDetail(game any, detectedTags []string, opts ...Option) 
 			case o.ExactFirst && d.Exact:
 				exact = append(exact, d)
 			case o.Fuzzy && hit >= effMinHits && prec >= o.MinPrec:
-				if o.UniqueSingle && hit < o.MinHits {
-					// 证据不足：对上的 tag 只要有一个是池内多条规则共用的，就无法区分，不认
-					shared := false
-					for t := range c.rule.tagSet {
-						if _, has := tags[t]; has && df[t] > 1 {
-							shared = true
-							break
-						}
-					}
-					if shared {
-						continue
-					}
-				}
 				partial = append(partial, d)
 			}
 		}

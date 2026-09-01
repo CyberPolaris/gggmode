@@ -14,4 +14,4 @@
 package gggmode
 
 // Version 是当前包版本，发布时与 git tag 保持一致。
-const Version = "0.1.1"
+const Version = "0.2.0"
