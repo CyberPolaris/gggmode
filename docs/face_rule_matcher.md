@@ -111,25 +111,30 @@ func main() {
 | 选项 | 默认 | 说明 |
 |------|------|------|
 | `WithFuzzy(bool)` | `true` | 是否允许模糊命中 |
-| `WithMinHits(int)` | `2` | 模糊命中至少对上的 tag 数（自动收缩到不超过实际检出数） |
+| `WithMinHits(int)` | `2` | 模糊命中至少对上的 tag 数。**严格门槛，不随检出数收缩**：检出 tag 数不足时模糊匹配必然不认，确实要认单 tag 传 `WithMinHits(1)` |
 | `WithMinPrec(float64)` | `0.5` | 模糊入围门槛 = 命中数 / 检出 tag 数 |
 | `WithIncludeGlobal(bool)` | `true` | 指定 game 时是否连同顶层通用规则一起匹配 |
 | `WithExactFirst(bool)` | `true` | 精确命中是否提第一梯队；`false` = 纯模糊模式（对比实验用） |
-| `WithUniqueSingle(bool)` | `true` | 单标签误判防护，见下节 |
+| `WithUniqueSingle(bool)` | — | **已废弃，无任何效果**（严格 MinHits 下不可能出现 hit < MinHits 的入围项），保留仅为兼容 |
 
 ```go
 key, ok := rs.BestMatch(game, tags, gggmode.WithMinPrec(0.6), gggmode.WithUniqueSingle(false))
 ```
 
-## 六、单标签误判防护
+## 六、证据不足防护（严格 MinHits）
 
-只检出 1 个 tag 等证据不足时，`prec` 恒为 1.0、`MinHits` 又自动降到 1，两道门槛失效；
-而共用 tag（如 `人脸验证窗口` 同时属于多条规则）只能靠 JSON 顺序随机挑一条——这就是误判来源。防护手段：
+模糊命中必须至少对上 `MinHits`（默认 2）个 tag，**门槛不随检出数收缩**：
+只检出 1 个 tag 时，无论它是共用还是独占，一律不认，返回未命中，宁可等下一帧。
+确实要认单 tag 的场景显式传 `WithMinHits(1)`。
 
-1. **`WithUniqueSingle(true)`（默认开）**：证据不足（hit < MinHits）的模糊命中，只有对上的 tag 在候选池内"只属于这一条规则"才认；共用 tag 一律不认，返回未命中，宁可等下一帧
-2. **规则加 `$must` 锚点**：让每条规则至少有一个独占的必要 tag
-3. **`TagOwners()`** 列出每个 tag 被哪些规则共用，用来审查规则库、决定加哪些锚点
-4. **流水线层面**：连续 2~3 帧的 tag 取并集再匹配，或同一 key 连续出现 N 次才采纳
+辅助手段：
+
+1. **规则加 `$must` 锚点**：让每条规则至少有一个独占的必要 tag
+2. **`TagOwners()`** 列出每个 tag 被哪些规则共用，用来审查规则库、决定加哪些锚点
+3. **流水线层面**：连续 2~3 帧的 tag 取并集再匹配，或同一 key 连续出现 N 次才采纳
+
+> 历史行为（v0.1.x）：门槛会收缩到实际检出数，单个"独占 tag"可以命中，
+> 由 `UniqueSingle` 防护拦截共用 tag。v0.2.0 起改为严格门槛，`UniqueSingle` 废弃。
 
 ## 七、API 一览
 
