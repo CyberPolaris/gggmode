@@ -19,7 +19,8 @@ coverage.html
 .env
 .claude/
 
-# 仅本地保留，不进公开仓库（参考资料 / 真实规则 / 测试用例）
+# 仅本地保留，不进公开仓库（参考资料 / 真实规则 / 测试用例 / 含个人信息的工作流记录）
 .Python源码/
 testdata/
 *_test.go
+docs/GITHUB_WORKFLOW.md

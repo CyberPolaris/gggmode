@@ -31,8 +31,6 @@ details := rs.MatchDetail(683, tags) // 带打分明细，调阈值/排查误判
 
 ## 开发
 
-开发环境、GitHub 协作规范与操作记录见 [docs/GITHUB_WORKFLOW.md](docs/GITHUB_WORKFLOW.md)。
-
 ```bash
 go build ./...   # 编译
 go test ./...    # 测试
