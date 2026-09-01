@@ -105,5 +105,11 @@ Git 全局身份：`CyberPolaris <m13507262368@163.com>`
 - 添加 MIT License
 - 打 tag `v0.1.0` 并推送；使用方可 `go get github.com/CyberPolaris/gggmode@v0.1.0`
 - 注意：tag 被模块代理缓存后不可变，后续改动需发新版本号（不能删 tag 重打）
+
+### 2026-09-01 发布 v0.1.1：兼容线上 Go 1.23
+
+- 线上 Jenkins 用 Go 1.23，go.mod 的 `go 1.27.0` 声明导致无法发版
+- go.mod 降为 `go 1.23.4`（代码未用 1.24+ 特性），用 GOTOOLCHAIN=go1.23.4 真实工具链跑通全部测试
+- 本地开发仍用 Go 1.27，不冲突：go 指令声明的是最低兼容版本
 - [ ] （可选）配置 GitHub Actions CI：build + vet + test
 - [ ] （可选，国内网络）`go env -w GOPROXY=https://goproxy.cn,direct`

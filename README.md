@@ -2,7 +2,7 @@
 
 > 根据检测到的画面 tags 反推规则 key，两级匹配：精确命中优先，无精确命中时按 F1 打分模糊匹配。Python 版 face_rule_matcher 的 Go 移植，行为逐例对齐。
 
-[![Go Version](https://img.shields.io/badge/go-1.27-blue)](https://go.dev/)
+[![Go Version](https://img.shields.io/badge/go-%3E%3D1.23.4-blue)](https://go.dev/)
 
 ## 安装
 
